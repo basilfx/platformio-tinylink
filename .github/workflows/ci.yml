@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform:
+          - uno
+          - esp32dev
+          - teensy31
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Setup Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.x'
+
+    - name: Install PlatformIO
+      run: |
+        pip install platformio
+        platformio platform install atmelavr
+        platformio platform install espressif32
+        platformio platform install teensy
+
+    - name: Build Library
+      run: |
+        platformio ci --lib="." --board=${{ matrix.platform }} examples/BasicEcho/BasicEcho.ino
+
+    - name: Check library.json
+      run: |
+        python -c "import json; f = open('library.json'); json.load(f)"
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Setup Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.x'
+
+    - name: Install PlatformIO
+      run: |
+        pip install platformio
+
+    - name: Run checks
+      run: |
+        platformio check --fail-on-defect medium
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Setup Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: '3.x'
+
+    - name: Install PlatformIO
+      run: |
+        pip install platformio
+        platformio platform install native
+
+    - name: Run tests
+      run: |
+        platformio test -e native
