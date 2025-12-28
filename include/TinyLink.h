@@ -30,7 +30,7 @@ typedef enum {
 struct frame_t {
     uint16_t length;
     uint16_t flags;
-    uint8_t* payload;
+    const uint8_t* payload;
 };
 
 class TinyLink {
