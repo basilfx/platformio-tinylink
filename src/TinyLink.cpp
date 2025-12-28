@@ -112,9 +112,9 @@ bool TinyLink::writeFrame(const frame_t* frame)
     this->writeStream(false, reinterpret_cast<uint8_t*>(header), sizeof(header));
 
     // Send body.
-    uint32_t checksumFrame = this->checksumFrame(header, reinterpret_cast<uint8_t*>(frame->payload), frame->length);
+    uint32_t checksumFrame = this->checksumFrame(header, frame->payload, frame->length);
 
-    this->writeStream(false, reinterpret_cast<uint8_t*>(frame->payload), frame->length);
+    this->writeStream(false, frame->payload, frame->length);
     this->writeStream(false, reinterpret_cast<uint8_t*>(&checksumFrame), 4);
 
     return true;
@@ -126,7 +126,7 @@ bool TinyLink::write(const uint16_t flags, const void* payload, const uint16_t l
 
     frame.length = length;
     frame.flags = flags;
-    frame.payload = static_cast<uint8_t*>(payload);
+    frame.payload = static_cast<const uint8_t*>(payload);
 
     return this->writeFrame(&frame);
 }

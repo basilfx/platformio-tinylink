@@ -4,11 +4,13 @@
 
 uint8_t buffer[128];
 
-TinyLink link(Serial, buffer, sizeof(buffer));
+TinyLink tinylink(Serial, buffer, sizeof(buffer));
 
 void setup()
 {
+#ifdef LED_BUILTIN
     pinMode(LED_BUILTIN, OUTPUT);
+#endif
 
     Serial.begin(9600);
 }
@@ -18,12 +20,14 @@ void loop()
     frame_t frame;
 
     if (Serial.available()) {
-        if (link.readFrame(&frame)) {
+        if (tinylink.readFrame(&frame)) {
             // Toggle led based on the flags value.
+#ifdef LED_BUILTIN
             digitalWrite(LED_BUILTIN, frame.flags != 0);
+#endif
 
             // Echo the frame.
-            link.writeFrame(&frame);
+            tinylink.writeFrame(&frame);
         }
     }
 }
