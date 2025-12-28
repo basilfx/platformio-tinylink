@@ -1,7 +1,7 @@
 # Changelog
 
 ## v0.1.0
-Release 24 December 2025
+Release 28 December 2025
 
 Highlights:
 * Added: initial release.
